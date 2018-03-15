@@ -49,7 +49,8 @@ func NewFromConfig(cfg *config.Config, p processor.Processor, l logr.Logger) (*C
 	}
 	l.Info("Done.")
 
-	Setup(cfg, ch, l)
+        //Do not create queues-exchanges
+	//Setup(cfg, ch, l)
 
 	return &Consumer{
 		Connection: conn,
