@@ -8,6 +8,7 @@ import (
 	"os/signal"
 	"syscall"
 
+	"github.com/bketelsen/logr"
 	"github.com/codegangsta/cli"
 	"github.com/corvus-ch/rabbitmq-cli-consumer/acknowledger"
 	"github.com/corvus-ch/rabbitmq-cli-consumer/command"
@@ -15,7 +16,6 @@ import (
 	"github.com/corvus-ch/rabbitmq-cli-consumer/consumer"
 	"github.com/corvus-ch/rabbitmq-cli-consumer/log"
 	"github.com/corvus-ch/rabbitmq-cli-consumer/processor"
-	"github.com/thockin/logr"
 )
 
 var (
@@ -66,6 +66,10 @@ var flags = []cli.Flag{
 	cli.BoolFlag{
 		Name:  "no-datetime",
 		Usage: "prevents the output of date and time in the logs.",
+	},
+	cli.BoolFlag{
+		Name:  "no-declare",
+		Usage: "prevents the queue from being declared.",
 	},
 }
 
@@ -223,6 +227,10 @@ func LoadConfiguration(c *cli.Context) (*config.Config, error) {
 
 	if c.IsSet("strict-exit-code") {
 		cfg.RabbitMq.Stricfailure = c.Bool("strict-exit-code")
+	}
+
+	if c.IsSet("no-declare") {
+		cfg.QueueSettings.Nodeclare = c.Bool("no-declare")
 	}
 
 	return cfg, nil
