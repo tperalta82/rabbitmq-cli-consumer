@@ -3,6 +3,7 @@ package consumer
 import (
 	"context"
 	"fmt"
+	"os"
 
 	"github.com/bketelsen/logr"
 	"github.com/corvus-ch/rabbitmq-cli-consumer/delivery"
