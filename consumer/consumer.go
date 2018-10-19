@@ -70,6 +70,10 @@ func (c *Consumer) Consume(ctx context.Context) error {
 	}
 
 	c.Log.Info("Succeeded registering consumer.")
+
+    defer c.Connection.Close()
+    go ConnectionCloseHandler(c.Channel.NotifyClose(make(chan *amqp.Error)), c)
+
 	c.Log.Info("Waiting for messages...")
 
 	done := make(chan error)
@@ -108,7 +112,6 @@ func (c *Consumer) checkError(err error) error {
 	switch err.(type) {
 	case *processor.CreateCommandError:
 		c.Log.Error(err)
-		return nil
 
 	default:
 		return err
@@ -143,4 +146,11 @@ func (c *Consumer) NotifyClose(receiver chan error) chan error {
 	}
 
 	return receiver
+}
+
+// ConnectionCloseHandler calls os.Exit after the connection to RabbitMQ got closed.
+func ConnectionCloseHandler(closeErr chan *amqp.Error, c *Consumer) {
+	err := <-closeErr
+	c.Log.Error("Connection closed: %v", err)
+	os.Exit(10)
 }
